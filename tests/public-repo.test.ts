@@ -14,21 +14,24 @@ import { extname, join, relative } from "node:path";
 const ROOT = join(import.meta.dir, "..");
 const SELF = relative(ROOT, import.meta.path);
 
-// Paths and ids that only exist in the private workspace.
+// Paths and ids that only exist in the private workspace. The lines between the guard-fixtures
+// markers are the only ones the path scan skips: they must name what they catch.
+// guard-fixtures:start
 const INTERNAL_PATHS: RegExp[] = [
   /\/mnt\//,
   /project-files/i,
   /\/Users\//,
   /[A-Za-z]:\\Users\\/,
-  /\/home\//,
+  /\/home\/(?!runner\/)/,
   /\/root\//,
   /\/tmp\/claude/,
-  /\bplans\//,
+  /(^|[\s"'`(\[])plans\//,
   /memory_vault/,
   /\bcmsg_[A-Za-z0-9]/,
   /\bchan_[A-Za-z0-9]{8,}/,
   /claude\.ai\/code\/(session|project)/,
 ];
+// guard-fixtures:end
 
 const BINARY = new Set([".png", ".webp", ".jpg", ".jpeg", ".gif", ".ico", ".mp4", ".webm", ".woff", ".woff2"]);
 const SKIP_DIRS = new Set([".git", "node_modules"]);
@@ -55,6 +58,19 @@ export function bannedWords(text: string, banned: string[]): string[] {
 
 export function internalPaths(line: string): RegExp[] {
   return INTERNAL_PATHS.filter((re) => re.test(line));
+}
+
+// A file's lines, with the guard's own marked fixture lines left out.
+export function scannedLines(file: string): string[] {
+  let skip = false;
+  return readFileSync(join(ROOT, file), "utf8")
+    .split("\n")
+    .map((line) => {
+      if (line.includes("guard-fixtures:start")) skip = true;
+      const out = skip ? "" : line;
+      if (line.includes("guard-fixtures:end")) skip = false;
+      return out;
+    });
 }
 
 // The files git would commit: tracked ones plus new ones that .gitignore doesn't drop.
@@ -105,10 +121,11 @@ describe("the word matcher", () => {
 });
 
 describe("the path matcher", () => {
+  // guard-fixtures:start
   test("knows the private ids and paths", () => {
     for (const line of [
       "see /mnt/x and plans/y",
-      "see chan_01Wbm4MomTPiGKciPyoWqYX",
+      "see chan_XXXXXXXXXXXXXXXX",
       "https://claude.ai/code/project/x",
       "/tmp/claude-0/scratch",
       "/root/.cache",
@@ -117,9 +134,22 @@ describe("the path matcher", () => {
       expect([line, internalPaths(line).length > 0]).toEqual([line, true]);
     }
   });
+  // guard-fixtures:end
 
-  test("leaves ordinary home paths alone", () => {
-    expect(internalPaths("~/.local/bin and $HOME/.config are fine")).toEqual([]);
+  test("leaves ordinary paths alone", () => {
+    for (const line of [
+      "~/.local/bin and $HOME/.config are fine",
+      '<a href="/plans/team">Plans</a>',
+      "explains/why",
+      "cd /home/runner/work/xmu-site",
+    ]) {
+      expect([line, internalPaths(line)]).toEqual([line, []]);
+    }
+  });
+
+  test("scans its own file too, outside the marked fixture lines", () => {
+    expect(scannedLines(SELF).some((l) => l.includes("const " + "INTERNAL_PATHS:"))).toBe(false);
+    expect(scannedLines(SELF).some((l) => l.includes("describe(\"nothing private"))).toBe(true);
   });
 });
 
@@ -150,13 +180,7 @@ describe("nothing private in the public repo", () => {
   test("no file name or text file holds a path or id from the private workspace", () => {
     const hits = [
       ...files.filter((f) => internalPaths(f).length).map((f) => `file name: ${f}`),
-      ...text
-        .filter((f) => f !== SELF)
-        .flatMap((f) =>
-          readFileSync(join(ROOT, f), "utf8")
-            .split("\n")
-            .flatMap((line, i) => internalPaths(line).map((re) => `${f}:${i + 1} ${re}`)),
-        ),
+      ...text.flatMap((f) => scannedLines(f).flatMap((line, i) => internalPaths(line).map((re) => `${f}:${i + 1} ${re}`))),
     ];
     expect(hits).toEqual([]);
   });

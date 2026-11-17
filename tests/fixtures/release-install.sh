@@ -1,25 +1,10 @@
 #!/bin/sh
-# xmu installer (XMU-725, XMU-792): `curl -fsSL <base>/install.sh | XMU_DOWNLOAD_BASE=<base> bash`
-#
-# Detects the platform and installs two programs from a release into one folder:
-#   xmu     the Rust xmu (xmu chat, xmu version)
-#   xmu-ts  the TS single binary (Bun product layer with the Rust event-log addon embedded);
-#           xmu hands `run` and `demo` to it
-# and the agents and skills (xmu-agents.tar.gz, XMU-882) into xmu's data folder,
-# $XDG_DATA_HOME/xmu (when absolute) or ~/.local/share/xmu, so `xmu --agent <name>` finds them
-# in any project. Everything is checked against its sha256, and both programs must start and
-# report the same version, before anything replaces an older install. XMU_DOWNLOAD_BASE is a
-# release URL, or a folder holding the release files (a private repo's release: `gh release download vX.Y.Z -D <folder>`).
-# Platform → artifact names must match packages/cli/src/targets.ts (tested).
-#
-# Everything runs from `main`, called on the last line: a download cut short runs nothing.
+# A copy of the release installer as shipped in v0.4.3, comments removed (see tests/install.test.ts).
 set -eu
 
 say() { printf '%s\n' "$*"; }
 fail() { printf 'xmu install: %s\n' "$*" >&2; exit 1; }
 
-# The unpacked agents and skills in $astage take the place of those in $data; the old ones are
-# kept as $astage/old-* until the stage goes. Stops at the first move that fails.
 swap_agents() {
   for part in agents skills; do
     if [ -e "$data/$part" ] || [ -L "$data/$part" ]; then mv -f "$data/$part" "$astage/old-$part" || return 1; fi
@@ -27,8 +12,6 @@ swap_agents() {
   done
 }
 
-# After a failed step from swap_agents on: $data as it was before it. Goes on past a move that
-# fails, and fails if any did.
 put_back_agents() {
   ok=0
   for part in agents skills; do
@@ -41,8 +24,6 @@ put_back_agents() {
   return "$ok"
 }
 
-# put_back_agents, then fail with `why`. Old folders it cannot put back stay in the stage, which
-# is then kept, and are named: they are never deleted.
 undo_agents() {
   if put_back_agents; then fail "$1"; fi
   kept="$astage"
@@ -66,22 +47,16 @@ detect_target() {
   printf 'xmu-%s-%s\n' "$os" "$arch"
 }
 
-# The sha256 of a file, read from stdin: sha256sum escapes a name with a backslash or newline.
 sha256() {
   if command -v sha256sum >/dev/null 2>&1; then sha256sum <"$1" | cut -d ' ' -f 1
   else shasum -a 256 <"$1" | cut -d ' ' -f 1; fi
 }
 
-# Runs `$1 version`; prints its line, or fails with what it wrote to stderr: its first line
-# that starts with an error (`error: …`, `TypeError: …`), else its last line other than Bun's
-# own version line. Bun prints a source excerpt before the error itself.
 start() {
   if out="$(FORCE_COLOR=0 NO_COLOR=1 "$1" version 2>"$stage/start.err")"; then
     printf '%s\n' "$out"
     return
   fi
-  # Read as bytes (LC_ALL=C), without colour codes or NUL bytes: otherwise grep calls the file
-  # binary and prints nothing useful.
   esc="$(printf '\033')"
   LC_ALL=C tr -d '\000' <"$stage/start.err" | LC_ALL=C sed "s/$esc\\[[0-9;]*[A-Za-z]//g" |
     LC_ALL=C tr -cd '[:print:]\n' >"$stage/start.txt"
@@ -92,8 +67,6 @@ start() {
   fail "$2 failed to start: ${why:-no message}; $3"
 }
 
-# An absolute folder written plainly: no `.`, doubled or trailing slashes. `..` stays: after a
-# symlink it leads where the system takes it, which the text alone cannot tell.
 plain_dir() {
   out=""
   old_ifs="$IFS"
@@ -110,7 +83,6 @@ plain_dir() {
   printf '%s\n' "${out:-/}"
 }
 
-# The folder a path really is (symlinks and `..` resolved by the system), or nothing.
 real_dir() {
   (cd -P -- "$1" 2>/dev/null && pwd -P) || true
 }
@@ -123,7 +95,6 @@ main() {
 
   base="${XMU_DOWNLOAD_BASE:-}"
   [ -n "$base" ] || fail "set XMU_DOWNLOAD_BASE to the release URL, or to a folder holding the release files"
-  # One trailing slash is how a folder is often written; the files are joined with their own.
   base="${base%/}"
   if [ -n "${XMU_INSTALL_DIR:-}" ]; then
     dir="$XMU_INSTALL_DIR"
@@ -134,8 +105,6 @@ main() {
   fi
   case "$dir" in /*) ;; *) dir="$PWD/$dir" ;; esac
   dir="$(plain_dir "$dir")"
-  # Where xmu reads its installed agents: an absolute XDG_DATA_HOME, else HOME's (XDG).
-  # A relative one is ignored, as xmu ignores it: xmu would never look there.
   case "${XDG_DATA_HOME:-}" in
     /*) data="$XDG_DATA_HOME/xmu" ;;
     *)
@@ -165,8 +134,6 @@ main() {
     [ ! -d "$dir/$name" ] || fail "$dir/$name is a folder; move it away, then install again"
   done
 
-  # Staged in the install folder itself, so each program then takes its place in one rename:
-  # nothing is ever half-written under its own name.
   mkdir -p "$dir" 2>/dev/null || fail "cannot create $dir"
   stage="$(mktemp -d "$dir/.xmu-install.XXXXXX" 2>/dev/null)" || fail "cannot write to $dir"
   astage=""
@@ -189,13 +156,9 @@ main() {
     actual="$(sha256 "$stage/$name")"
     [ "$expected" = "$actual" ] || fail "checksum mismatch for $name (expected $expected, got $actual)"
     chmod 755 "$stage/$name"
-    # A file a browser downloaded carries macOS's quarantine mark, which a copy keeps: Gatekeeper
-    # would then refuse these unsigned programs. The checksum above proves each file arrived whole,
-    # not who made it: trust comes from where the release was downloaded (the repo's release).
     if [ "$(uname -s)" = Darwin ]; then xattr -d com.apple.quarantine "$stage/$name" 2>/dev/null || true; fi
   done
 
-  # The agents and skills: checked now, unpacked once both programs start.
   for file in "$agents_archive" "$agents_archive.sha256"; do
     if [ -n "$folder" ] && [ ! -e "$base/$file" ]; then fail "$file is not in $base"; fi
     fetch "$file" "$stage/$file" || fail "download failed: $base/$file"
@@ -208,7 +171,6 @@ main() {
   actual="$(sha256 "$stage/$agents_archive")"
   [ "$expected" = "$actual" ] || fail "checksum mismatch for $agents_archive (expected $expected, got $actual)"
 
-  # The TS program extracts its Rust addon to $TMPDIR at startup (decision 0002).
   ts_line="$(start "$stage/$ts_artifact" xmu-ts "check that this release is for $artifact (Linux needs glibc 2.28 or later), and that TMPDIR allows running programs")"
   line="$(start "$stage/$artifact" xmu "check that this release is for $artifact (Linux needs glibc 2.28 or later)")"
   version="$(printf '%s\n' "$line" | cut -d ' ' -f 2)"
@@ -216,16 +178,11 @@ main() {
   [ -n "$version" ] && [ "$version" = "$ts_version" ] ||
     fail "the release does not match: xmu is $version but xmu-ts is $ts_version"
 
-  # Unpacked beside where they go, so each folder takes its place in one rename.
   mkdir -p "$data" 2>/dev/null || fail "cannot create $data"
   astage="$(mktemp -d "$data/.xmu-install.XXXXXX" 2>/dev/null)" || fail "cannot write to $data"
-  # Owned by whoever installs, never by the uid that built the archive.
   tar -xzf "$stage/$agents_archive" --no-same-owner -C "$astage" && [ -d "$astage/agents" ] && [ -d "$astage/skills" ] ||
     fail "$agents_archive does not unpack to agents/ and skills/ (is XMU_DOWNLOAD_BASE the release?)"
 
-  # Not stopped from here. The agents of this release first, and none an earlier one left (the
-  # old folders go with the stage): if one cannot take its place, the old ones are put back and
-  # the programs are not touched. Then xmu-ts: an xmu in place always has its xmu-ts.
   trap '' HUP INT TERM
   swap_agents || undo_agents "cannot put the agents in $data (the old ones are back, and nothing was installed)"
   { mv -f "$stage/$ts_artifact" "$dir/xmu-ts" && mv -f "$stage/$artifact" "$dir/xmu"; } ||
@@ -244,7 +201,6 @@ main() {
   if [ -z "$on_path" ]; then
     say "add $dir to your PATH to run \`xmu\` directly"
   else
-    # Another xmu earlier on PATH (cargo install puts one in ~/.cargo/bin) would run instead.
     first="$(command -v xmu 2>/dev/null || true)"
     case "$first" in
       /*) [ "$first" -ef "$dir/xmu" ] ||

@@ -40,6 +40,6 @@ jobs:
         run: bun test tests
         env:
           # The words the privacy guard bans (tests/public-repo.test.ts), kept out of the repo.
-          # Secrets don't reach PRs from forks, so the guard only insists on them here.
+          # Secrets don't reach PRs from forks or Dependabot, so the guard only insists on them here.
           PRIVATE_WORDS: ${{ secrets.PRIVATE_WORDS }}
-          REQUIRE_PRIVATE_WORDS: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+          REQUIRE_PRIVATE_WORDS: ${{ github.actor != 'dependabot[bot]' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) }}
