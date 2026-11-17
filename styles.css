@@ -1,0 +1,756 @@
+/* xmu landing page (XMU-814): brand v1 look, copy v2 (2026-10-22). Brand v1: Deep Space, Cosmic Blue, Nebula Blue, Icy Cyan, Stellar White.
+   Type scale (brand v1 type scale). Desktop: display 56/64 · H2 32/40 · body 16/24 · small 14/20 · caption 12/16.
+   Phone: display 36/44 · H2 26/34. Sora 600 headings, Inter text. Inside the terminal: Geist, code in Geist Mono. */
+
+@font-face { font-family: "Sora"; src: url(assets/fonts/sora-latin-wght-normal.woff2) format("woff2"); font-weight: 100 800; font-display: swap; }
+@font-face { font-family: "Inter"; src: url(assets/fonts/inter-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Geist"; src: url(assets/fonts/geist-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Geist Mono"; src: url(assets/fonts/geist-mono-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; font-display: swap; }
+
+:root {
+  --ground: #050A12; --surface: #0F1A2B; --sunk: #0A1322; --line: #2B3A55;
+  --text: #EAF4FF; --muted: #A7B4C9;
+  --primary: #2E6EA8; --primary-hover: #3A7DBA; --on-primary: #FFFFFF;
+  --field: #5F7294; --accent: #7EC8F3; --link: #7EC8F3; --bad: #FF9B9B; --good: #4FBF8B;
+  --display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --mono: "Geist Mono", ui-monospace, monospace;
+  --gutter: 40px; --max: 1200px; --hdr: 64px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --ground: #F7FAFF; --surface: #FFFFFF; --sunk: #EEF4FF; --line: #CBD8E8;
+  --text: #050A12; --muted: #2B3A55;
+  --primary-hover: #0F2B4D; --field: #6E819C; --accent: #2E6EA8; --link: #2E6EA8; --bad: #B42318; --good: #1E7A50;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-padding-top: calc(var(--hdr) + 16px); -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+::selection { background: color-mix(in srgb, var(--accent) 32%, transparent); color: var(--text); }
+html { scrollbar-color: var(--line) var(--ground); }
+input { caret-color: var(--accent); }
+body { margin: 0; background: var(--ground); color: var(--text); font: 400 16px/24px var(--body); -webkit-font-smoothing: antialiased; overflow-wrap: anywhere; }
+h1, h2 { margin: 0; font-family: var(--display); font-weight: 600; letter-spacing: 0; text-wrap: balance; }
+p { margin: 0; text-wrap: pretty; }
+a { color: var(--link); }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+.skip { position: absolute; left: 16px; top: -48px; z-index: 100; padding: 12px 14px; border-radius: 10px; background: var(--primary); color: var(--on-primary); font: 600 14px/20px var(--body); text-decoration: none; transition: top 160ms var(--ease-out); }
+.skip:focus-visible { top: 12px; }
+
+/* header: logo left, CTA right, same color as the page */
+.nav { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; height: var(--hdr);
+  padding: 0 max(var(--gutter), env(safe-area-inset-right, 0px), calc((100% - var(--max)) / 2)) 0 max(var(--gutter), env(safe-area-inset-left, 0px), calc((100% - var(--max)) / 2));
+  background: color-mix(in srgb, var(--ground) 84%, transparent); -webkit-backdrop-filter: saturate(140%) blur(14px); backdrop-filter: saturate(140%) blur(14px); }
+.brand { display: inline-flex; align-items: center; min-height: 44px; gap: 10px; color: var(--text); text-decoration: none; }
+.brand .mk { width: 34px; height: auto; } .brand .wm { height: 19px; width: auto; }
+.brand.sm { gap: 6px; } .brand.sm .mk { width: 20px; } .brand.sm .wm { height: 12px; }
+.nav-r { display: flex; align-items: center; gap: 8px; }
+.theme { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); cursor: pointer; transition: color 150ms ease, background-color 150ms ease; }
+.theme svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+@media (hover: hover) and (pointer: fine) { .theme:hover { color: var(--text); background: color-mix(in srgb, var(--text) 6%, transparent); } }
+
+/* buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 10px;
+  background: var(--primary); color: var(--on-primary); font: 600 16px/24px var(--body); text-align: center; text-decoration: none; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .18), 0 0 0 1px rgb(126 200 243 / .18), 0 4px 12px -4px rgb(5 10 18 / .4);
+  transition: background-color 160ms ease, transform 160ms var(--ease-out); }
+.btn:active { transform: scale(0.97); }
+.btn[aria-disabled="true"] { cursor: progress; opacity: .8; }
+@media (hover: hover) and (pointer: fine) { .btn:hover { background: var(--primary-hover); } .btn:hover .arr { transform: translateX(2px); } }
+.btn .arr { display: inline-grid; place-items: center; width: 24px; height: 24px; margin-right: -8px; border-radius: 999px; background: rgb(255 255 255 / .16); transition: transform 200ms var(--ease-out); }
+.btn.sm { min-height: 44px; padding: 0 14px; border-radius: 8px; font: 500 14px/20px var(--body); }
+.btn.sm .arr { width: 20px; height: 20px; }
+.btn.lg { min-height: 52px; padding: 0 22px; }
+
+/* theme: one icon per theme */
+.theme .i-moon { display: none; }
+:root[data-theme="light"] .theme .i-sun { display: none; }
+:root[data-theme="light"] .theme .i-moon { display: block; }
+
+/* layout */
+main > section, .pair { padding-left: max(var(--gutter), env(safe-area-inset-left, 0px), calc((100% - var(--max)) / 2)); padding-right: max(var(--gutter), env(safe-area-inset-right, 0px), calc((100% - var(--max)) / 2)); }
+
+/* 1 hero */
+.hero { padding-top: 72px; padding-bottom: 96px; }
+.hero-copy { max-width: 760px; }
+.hero h1 { font-size: 56px; line-height: 64px; }
+@media (min-width: 1200px) { .hero-copy { max-width: none; } .hero h1 { max-width: 18em; } }
+.hero .sub { margin-top: 24px; max-width: 36em; color: var(--muted); font-size: 20px; line-height: 28px; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; margin-top: 32px; }
+
+/* the product window: stays dark in both themes. XMU-833: the demo video's look (the approved mock,
+   2026-10-24): session refunds-hotfix, each pane in its agent's own CLI with an agent chip in its header, xmu's
+   own bar along the bottom. Brand v1 colours and the window's tokens only; every text in it is 12px or larger. */
+.tm, .hx, .demo { --t-bg: #07101C; --t-panel: #0F1A2B; --t-line: #1A2F4D; --t-text: #EAF4FF; --t-dim: #8C9AB2; --t-faint: #4A5C78; --t-bad: #FF9B9B; --t-key: #7EC8F3;
+  --c-ben: #E3A23B; --c-ana: #7EC8F3; --c-mia: #F27AA0; --c-ok: #4FBF8B;
+  --claude: #D97757; /* Claude's logo colour (DESIGN.md), on its logo and its ✻ mark only */ }
+.tm { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: 560px;
+  margin: 56px 7px 0; overflow: hidden; border-radius: 16px; background: var(--t-bg); color: var(--t-text); font: 400 14px/20px "Geist", var(--body);
+  box-shadow: 0 0 0 6px rgb(255 255 255 / .035), 0 0 0 7px rgb(255 255 255 / .08), inset 0 1px 0 rgb(255 255 255 / .06), 0 40px 80px -32px rgb(0 0 0 / .6); }
+:root[data-theme="light"] .tm { box-shadow: 0 0 0 6px rgb(5 10 18 / .04), 0 0 0 7px rgb(5 10 18 / .08), 0 40px 80px -32px rgb(5 10 18 / .35); }
+/* each person's colour, and its RGB for tints */
+.ben { --c: var(--c-ben); --cr: 227 162 59; } .ana { --c: var(--c-ana); --cr: 126 200 243; } .mia { --c: var(--c-mia); --cr: 242 122 160; }
+.tm-bar { display: flex; align-items: center; gap: 14px; padding: 10px 16px; border-bottom: 1px solid var(--t-line); background: var(--t-panel); font: 400 13px/20px var(--mono); white-space: nowrap; }
+.dots { display: flex; gap: 6px; } .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--t-line); }
+.tm-title { color: var(--t-dim); } .tm-title b { color: var(--t-text); font-weight: 500; }
+.here { --gap: 10px; display: flex; align-items: center; gap: var(--gap); margin-left: auto; }
+.who { display: flex; max-width: 48px; }
+.who .pp, .who .pa, .av { display: grid; place-items: center; flex: none; border-radius: 50%; font-style: normal; }
+.who .pp { width: 22px; height: 22px; background: var(--c); color: #050A12; font: 600 10px/1 var(--body); }
+.who .pa { width: 22px; height: 22px; margin-left: -5px; padding: 3px; border: 1.5px solid var(--c); background: var(--t-panel); }
+.who .pa svg { width: 100%; height: 100%; }
+.cnt { color: var(--t-dim); font-variant-numeric: tabular-nums; }
+.live { color: var(--c-ok); } .live::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: currentColor; vertical-align: 1px; }
+.mlogo { width: 12px; height: 12px; flex: none; fill: currentColor; }
+.lg-claude { fill: #D97757; } .lg-codex { fill: #EAF4FF; } .lg-cursor { fill: #EAF4FF; } .lg-gemini { fill: #EAF4FF; }
+
+/* work area: ben on the left, ana over mia on the right, team chat on the far right */
+.work { display: grid; grid-template-columns: minmax(0, 1fr) 320px; min-height: 0; }
+.panes { position: relative; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); grid-template-areas: "ben ana" "ben mia";
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); /* equal rows, so the invite card moves exactly one seat */
+  min-width: 0; min-height: 0; overflow: hidden; }
+.pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; padding: 14px 16px; }
+.pane.ben { grid-area: ben; border-right: 1px solid var(--t-line); } .pane.ana { grid-area: ana; border-bottom: 1px solid var(--t-line); } .pane.mia { grid-area: mia; }
+
+/* pane header: the person, then a chip naming the agent that runs in the pane */
+.ph { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 24px; }
+.pt { display: flex; align-items: center; gap: 8px; min-width: 0; font: 600 13px/20px "Geist", var(--body); }
+.pt .av { width: 20px; height: 20px; background: var(--c); color: #050A12; font: 700 10px/1 var(--body); }
+.role { padding: 0 5px; border-radius: 4px; background: rgb(242 122 160 / .16); color: var(--c-mia); font: 500 12px/18px "Geist", var(--body); }
+.tag { display: inline-flex; align-items: center; gap: 5px; margin-left: 2px; padding: 1px 7px; border-radius: 6px; background: rgb(var(--cr) / .16); color: var(--c); font: 500 12px/18px var(--mono); white-space: nowrap; }
+/* a teammate typing into the pane */
+.ph .in { display: inline-flex; align-items: center; gap: 6px; padding: 1px 9px 1px 2px; border-radius: 999px; background: rgb(var(--cr) / .12); color: var(--c); font: 500 12px/18px "Geist", var(--body); white-space: nowrap; }
+.ph .in .av { width: 18px; height: 18px; background: var(--c); color: #050A12; font: 700 9px/1 var(--body); }
+/* labels (names, role and kind tags, timestamps, agent chips) never break inside a word, whatever body's
+   overflow-wrap says: a row of them wraps between labels instead (QA round 1) */
+.pt, .chat .nm { flex-wrap: wrap; row-gap: 2px; }
+.pt, .chat .nm, .tag, .role, .kind, .ts, .who, .ph .in, .cl-in .flag, .iv-copied { white-space: nowrap; overflow-wrap: normal; }
+
+/* each agent's own output style, on the window's tokens */
+.cli { --fg: var(--t-text); --dim: var(--t-dim); --faint: var(--t-faint); --ok: var(--c-ok); --bad: var(--t-bad);
+  margin-top: 12px; color: var(--fg); font: 400 13px/20px var(--mono); font-variant-ligatures: none; font-variant-numeric: tabular-nums; }
+.cli p { margin: 0; white-space: pre; }
+/* a tool result wraps under itself, as a terminal would, when a pane draws text wider than planned (hinted fonts) */
+.cli .cl-r { white-space: pre-wrap; padding-left: 5ch; text-indent: -5ch; }
+.cli b { font-weight: 600; }
+.cli .d { color: var(--dim); } .cli .k { color: var(--t-key); } .cli .ok { color: var(--ok); } .cli .bad { color: var(--bad); }
+.g { display: inline-block; width: 1ch; height: 20px; vertical-align: top; overflow: visible; }
+.g-dot { fill: var(--fg); } .g-dot.ok { fill: var(--ok); }
+.g-elb { fill: none; stroke: var(--dim); stroke-width: 1.2; }
+.g-hex { width: 10px; margin-right: 1px; fill: var(--fg); } .g-hex.open { fill: none; stroke: var(--dim); stroke-width: 1.1; }
+.g-star { color: var(--claude); }
+.cur { display: inline-block; width: 8px; height: 15px; margin: 0 1px; vertical-align: -3px; border-radius: 1px; background: var(--c); }
+.ls { display: none; }
+/* ben's log lines come in a long and a short form; the short one fits a narrow pane (1200 to 1279px, phones) */
+.pane.ben { container: ben / inline-size; }
+/* the widths fit CI's hinted glyphs (8px a column) with a column to spare: a log row takes 48, the "Updated" result 51 */
+@container ben (max-width: 391px) { .lw { display: none; } .ls { display: inline; } }
+@container ben (max-width: 411px) { .xw { display: none; } }
+@container ben (max-width: 319px) { .esc { display: none; } }
+@container ben (max-width: 340px) { .pane .cl-diff { padding-left: 2ch; } }
+
+/* ben: Claude, one transcript that grows as a terminal does (QA round 1). A line takes its room the moment it
+   prints; when the Bash call finishes, its live log and "Reading logs…" collapse to the one-line summary in the
+   same step. The transcript sits on the pane's bottom once it fills it, so older lines scroll up out of the top. */
+.cl, .cu, .cl-box, .cl-hints { display: grid; }
+.cl > *, .cu > *, .cl-box > *, .cl-hints > * { grid-area: 1 / 1; min-width: 0; }
+.tm .pane.ben .cl { display: flex; flex-direction: column; justify-content: flex-end; flex: 1 1 0; min-height: 0; overflow: hidden; }
+/* phones: the pane fills, so a line leaving the top fades out instead of being cut under the header. The
+   padding keeps the first line clear of the fade while nothing has scrolled yet. */
+@media screen and (max-width: 760px) { .tm .pane.ben .cl { padding-top: 10px; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16px); mask-image: linear-gradient(to bottom, transparent 0, #000 16px); } }
+.tm .cl > .cl-s { flex: 1 0 auto; }
+.cl-s > * + *, .cl-wip > * + * { margin-top: 8px; }
+.cl-s > :is(.cl-r, .cl-diff, .cl-log) { margin-top: 0; }
+/* a line prints, or clears, in one step, as a terminal draws it: no fade, no rise. Zero-length animations switch
+   every property on the same frame (one prompt box at a time; the log and its summary never both show). */
+@keyframes print { from { max-height: 0; margin-top: 0; visibility: hidden; } }
+@keyframes clear { to { max-height: 0; margin-top: 0; visibility: hidden; } }
+.tm .cl-s > :is(.up, .show), .tm .cl :is(.cl-box, .cl-hints) > .up { animation: print 0s var(--d) both; }
+.tm .cl-s > .gone, .tm .cl :is(.cl-box, .cl-hints) > .gone { animation: clear 0s var(--d) forwards; }
+.cl-u { color: var(--dim); }
+.cli :is(.cl-m, .cl-u) { white-space: pre-wrap; padding-left: 2ch; text-indent: -2ch; text-wrap: pretty; }
+.cl-diff { padding-left: 5ch; }
+.cl-diff p { margin-right: -16px; padding-left: 4px; }
+.cl-diff .n { color: var(--dim); } /* 4.5:1 or more on the window and on the red and green rows */
+.cl-diff .del { background: rgb(255 155 155 / .15); } .cl-diff .add { background: rgb(79 191 139 / .16); }
+.cl-in { position: relative; margin-top: 12px; padding: 5px 10px; border: 1px solid var(--faint); border-radius: 8px; white-space: pre; }
+.cl-hint { margin-top: 4px; padding-left: 2ch; color: var(--dim); font-size: 12px; }
+.cl-s > .cl-box { margin-top: 12px; } .cl-s > .cl-hints { margin-top: 4px; }
+.cl-box > .cl-in, .cl-hints > .cl-hint { margin: 0; }
+/* ana typing into ben's Claude: her colour on the box, her name on a flag, her cursor */
+.cl-box > .steer { align-self: start; margin-top: 8px; border-color: var(--c); color: var(--c); background: rgb(var(--cr) / .08);
+  box-shadow: 0 0 0 3px rgb(var(--cr) / .14), 0 8px 24px -10px rgb(var(--cr) / .45);
+  white-space: pre-wrap; padding-left: calc(10px + 2ch); text-indent: -2ch; }
+.cl-in .flag { position: absolute; top: -11px; left: 10px; display: inline-flex; align-items: center; gap: 5px; padding: 1px 8px 1px 2px; border-radius: 999px;
+  background: var(--c); color: #050A12; font: 600 12px/16px "Geist", var(--body); text-indent: 0; }
+.cl-in .flag .av { width: 14px; height: 14px; background: #050A12; color: var(--c); font: 700 8px/1 var(--body); }
+.cl-in .nw { white-space: nowrap; } /* the cursor never wraps alone */
+
+/* ana: Codex */
+.cx > * + * { margin-top: 8px; }
+.cli :is(.cx-u, .cx-in) { margin-left: -16px; margin-right: -16px; padding: 3px 16px; background: rgb(234 244 255 / .055); }
+.cli .cx-in { margin-top: 12px; }
+.cx-t { display: inline-grid; vertical-align: top; } .cx-t > * { grid-area: 1 / 1; }
+.cli .cx-s { white-space: pre-wrap; padding-left: 2ch; text-indent: -2ch; }
+.cx-s .bu { display: inline-block; text-indent: 0; width: 1ch; color: var(--dim); font-weight: 700; }
+.cx-s.msg .bu { color: var(--fg); } .cx-s.ran .bu { color: var(--ok); }
+.cx-s .shim { background: linear-gradient(90deg, var(--dim), var(--fg) 45%, var(--dim) 90%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* mia: Cursor. Her empty box (.cu-new) and her work (.cu-run) share one place too */
+.cu-run > * + * { margin-top: 8px; }
+.cu-u { padding: 2px 8px; border-left: 2px solid var(--faint); background: rgb(234 244 255 / .05); }
+.cu-w { color: var(--dim); }
+.cu-in { padding: 5px 10px; border: 1px solid var(--faint); border-radius: 4px; white-space: pre; }
+.cu-run > .cu-in { margin-top: 12px; }
+
+/* the xmu bar: xmu's own line under the panes */
+.xb { display: flex; align-items: center; gap: 10px; padding: 8px 16px; border-top: 1px solid var(--t-line); background: var(--t-panel);
+  color: var(--t-dim); font: 400 13px/20px var(--mono); white-space: nowrap; }
+/* the "›" and "·" separators: --t-dim, so they reach 4.5:1 on the bar, focused or not */
+.xb-p { color: var(--t-dim); } .xb-p b { color: var(--t-key); font-weight: 600; }
+.xb-l i { color: var(--t-dim); font-style: normal; }
+
+/* typing: a line grows one character at a time, the typist's cursor right behind it, then the cursor goes */
+.tw { display: inline-flex; align-items: center; vertical-align: top; }
+.ln { display: inline-block; max-width: 0; overflow: hidden; white-space: pre; visibility: hidden; animation: type var(--t) steps(var(--n), end) var(--d) forwards; }
+.tw::after { content: ""; flex: none; width: 8px; height: 15px; margin-left: 1px; border-radius: 1px; background: var(--c); opacity: 0;
+  animation: caret-on 1ms linear var(--d) forwards, caret-off 1ms linear calc(var(--d) + var(--t) + 0.3s) forwards; }
+@keyframes type { from { visibility: visible; } to { visibility: visible; max-width: calc(var(--n) * 1ch); } }
+@keyframes caret-on { to { opacity: 1; } }
+@keyframes caret-off { to { opacity: 0; } }
+@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(4px); } }
+@keyframes wd { 0%, 100% { opacity: 1; } 60% { opacity: .25; } }
+/* what arrives rises in at its moment, what leaves fades, a layer that replaces another shows at once */
+.up { animation: rise 240ms var(--ease-out) var(--d) both; }
+.gone { animation: out 160ms ease var(--d) forwards; }
+.cx-ph.gone { animation-duration: 1ms; } /* the placeholder goes as ana starts typing */
+.cu-new.gone { animation-duration: 1ms; } /* mia's empty box goes as her prompt goes in (QA round 2) */
+.show { animation: in 1ms linear var(--d) both; }
+/* ana's cursor in the box blinks three times, then rests (WCAG 2.2.2) */
+.steer .cur { animation: blink 1s steps(1) calc(var(--d) + 240ms) 3; }
+
+/* team chat: a normal chat, one message under the other */
+.chat { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; padding: 12px 0 8px; border-left: 1px solid var(--t-line); background: color-mix(in srgb, var(--t-panel) 45%, var(--t-bg)); }
+.chat-h { padding: 0 16px 6px; color: var(--t-dim); font: 500 12px/16px "Geist", var(--body); }
+.feed { flex: 1; min-height: 0; }
+.chat ol { margin: 0; padding: 0; list-style: none; }
+/* each message takes its room as it arrives, so a chat anchored to its bottom scrolls up, as a real one does */
+.chat li { display: flex; gap: 10px; max-height: 240px; overflow: hidden; padding: 8px 16px; animation: row 280ms var(--ease-out) var(--d) both; }
+@keyframes row { from { max-height: 0; padding-top: 0; padding-bottom: 0; margin-top: 0; opacity: 0; transform: translateY(4px); } }
+.chat .av { width: 24px; height: 24px; margin-top: 2px; background: var(--c); color: #050A12; font: 700 11px/1 var(--body); }
+.chat .av.ag { padding: 4px; border: 1.5px solid var(--c); background: var(--t-bg); }
+.chat .av.ag svg { width: 100%; height: 100%; }
+.chat .kind { padding: 0 5px; border-radius: 4px; background: rgb(234 244 255 / .08); color: var(--t-dim); font: 500 12px/18px "Geist", var(--body); }
+.chat .bot p + p { color: color-mix(in srgb, var(--t-text) 88%, var(--t-dim)); }
+.chat .nm { display: flex; align-items: center; gap: 6px; font: 600 13px/20px "Geist", var(--body); }
+.chat .ts { color: var(--t-dim); font-weight: 400; font-size: 12px; font-variant-numeric: tabular-nums; }
+.chat p + p { color: var(--t-text); font: 400 14px/20px "Geist", var(--body); }
+.at { padding: 0 3px; border-radius: 4px; color: var(--c); background: rgb(var(--cr) / .14); font-weight: 600; }
+
+/* XMU-829: the join sequence that opens the hero window.
+   0s ben's session is live and the invite is copied; 0.9s ana joins with Codex; 1.7s mia joins with Cursor.
+   XMU-833: each pane opens on its agent's chip and empty prompt; the work starts at 2.2s. */
+.j1 { --j: 0.9s; } .j2 { --j: 1.7s; }
+
+/* bar: avatars pop in, the count steps 1 -> 2 -> 3 */
+/* a joining avatar takes its room as it arrives, so the ones already in sit next to the count */
+.who.j1, .who.j2 { overflow: hidden; animation: pop 240ms var(--ease-out) var(--j) both; }
+@keyframes pop { from { opacity: 0; transform: scale(.9); max-width: 0; margin-left: calc(-1 * var(--gap)); } }
+.cnt { display: inline-grid; } .cnt .step { grid-area: 1 / 1; text-align: right; }
+/* the old count fades out, then the new one fades in, so two never overlap */
+.cnt .c1 { animation: out 160ms ease 0.9s both; }
+.cnt .c2 { animation: in 160ms ease 1.06s both, out 160ms ease 1.7s forwards; }
+.cnt .c3 { animation: in 160ms ease 1.86s both; }
+@keyframes in { from { opacity: 0; } }
+@keyframes out { to { opacity: 0; visibility: hidden; } }
+
+/* hero.js holds the window here while it waits off screen */
+.tm.held, .tm.held *, .tm.held *::before, .tm.held *::after { animation-play-state: paused !important; }
+
+/* panes: ana and mia rise into their seats, over the invite card */
+.pane.j1, .pane.j2 { position: relative; z-index: 1; background: var(--t-bg); animation: join 320ms var(--ease-out) var(--j) both; }
+@keyframes join { from { opacity: 0; transform: translateY(8px); } }
+
+/* the invite card waits in ana's seat, moves down a row to make room for her, then leaves as mia arrives.
+   .invite fills ana's seat, so moving it by its own height lands the card in mia's. */
+.invite { grid-area: ana; display: grid; place-items: center; padding: 16px;
+  animation: join 320ms var(--ease-out) 0.15s both, make-room 320ms var(--ease-out) 0.9s forwards, leave 200ms ease 1.7s forwards; }
+@keyframes make-room { to { transform: translateY(100%); } }
+@keyframes make-room-x { to { transform: translateX(100%); } }
+@keyframes leave { to { opacity: 0; visibility: hidden; } }
+.iv-card { display: grid; justify-items: center; gap: 14px; padding: 22px 26px 20px; border-radius: 14px; background: var(--t-panel); text-align: center;
+  box-shadow: 0 0 0 1px var(--t-line), inset 0 1px 0 rgb(234 244 255 / .05), 0 18px 36px -18px rgb(0 0 0 / .8), 0 2px 6px rgb(0 0 0 / .25); }
+.iv-h { color: var(--t-text); font: 600 16px/24px "Geist", var(--body); text-wrap: balance; }
+/* concentric: link field 10px with a 4px inset, so the chip is 6px */
+.iv-link { display: flex; align-items: center; gap: 12px; padding: 4px 4px 4px 12px; border-radius: 10px; background: var(--t-bg);
+  box-shadow: inset 0 0 0 1px var(--t-line); color: var(--t-text); font: 400 13px/20px var(--mono); white-space: nowrap; } /* the link never breaks */
+.iv-copied { padding: 2px 8px; border-radius: 6px; background: rgb(79 191 139 / .16); color: var(--c-ok); font: 500 12px/16px "Geist", var(--body); }
+/* who it waits for: ana and mia, then mia only once ana is in */
+.iv-wait { display: grid; color: var(--t-dim); font: 400 12px/16px "Geist", var(--body); }
+.iv-step { grid-area: 1 / 1; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.iv-wait .w1 { animation: out 160ms ease 0.9s both; } .iv-wait .w2 { animation: in 160ms ease 1.06s both; }
+.iv-who { display: flex; }
+.iv-who .av { width: 20px; height: 20px; margin-left: -4px; border: 1.5px dashed var(--c); background: var(--t-panel); color: var(--c); font: 700 9px/1 var(--body); }
+.iv-who .av:first-child { margin-left: 0; }
+.iv-dots { display: inline-flex; gap: 3px; } .iv-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; animation: wd 1.2s ease-in-out 2 both; }
+.iv-dots i:nth-child(2) { animation-delay: .2s; } .iv-dots i:nth-child(3) { animation-delay: .4s; }
+
+/* chat: who started, who was invited and who joined, as quiet system lines */
+.chat .sys { align-items: center; gap: 8px; padding: 4px 16px; color: var(--t-dim); font: 400 12px/18px "Geist", var(--body); }
+.chat .sys p { color: var(--t-dim); font: inherit; } .chat .sys b { color: var(--c); font-weight: 600; }
+.chat li:not(.sys) + .sys, .chat .sys + li:not(.sys) { margin-top: 6px; }
+.sys-dot { width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--c); }
+.chat .j0 { --d: 0s; } .chat .j1, .chat .j2 { --d: var(--j); }
+
+/* 761 to 1199: ben on top, ana and mia side by side below; the card waits in ana's seat and moves across to mia's.
+   Fixed rows, so the window is the same height waiting and settled. */
+@media (max-width: 1199px) {
+  .tm { height: auto; }
+  .panes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "ben ben" "ana mia"; grid-template-rows: 380px 232px; }
+  .pane.ben { border-right: 0; border-bottom: 1px solid var(--t-line); } .pane.ana { border-bottom: 0; } .pane.mia { border-left: 1px solid var(--t-line); }
+  .invite { animation: join 320ms var(--ease-out) 0.15s both, make-room-x 320ms var(--ease-out) 0.9s forwards, leave 200ms ease 1.7s forwards; }
+  .work { grid-template-columns: minmax(0, 1fr) 280px; }
+  .chat { contain: size; } /* the panes set the height; the chat fits in beside them */
+  /* the seats are 325 to 475px wide here: a tighter card keeps the link and "Link copied" on one line, centred */
+  .invite { padding: 8px; }
+  .iv-card { gap: 12px; padding: 18px 16px 16px; }
+  .iv-link { gap: 8px; padding-left: 10px; font-size: 12px; }
+}
+/* 1200 to 1279: ben's column is a little wider than ana's, so her seat is tight: the card takes the seat's edges */
+@media (min-width: 1200px) and (max-width: 1279px) { .invite { padding: 8px; } }
+
+/* reduced motion and paper: everyone is in and every line shows in its final state */
+@media (prefers-reduced-motion: reduce), print {
+  .tm, .tm *, .tm *::before, .tm *::after { animation: none !important; }
+  .tm .gone, .invite, .cnt .c1, .cnt .c2 { display: none !important; }
+  .tm .ln { max-width: none; visibility: visible; } .tm .tw::after { display: none; }
+}
+
+/* timing of each moment in the window, in document order (the CSP forbids inline styles):
+   --d start, --n characters typed, --t typing time (22ms per character, as in the XMU-814 mock).
+   Everyone has joined by 1.7s; the work starts at 2.2s. */
+.s1 { --d: 4.70s; }
+.s2 { --d: 2.20s; }
+.s3 { --d: 2.20s; }
+.s4 { --d: 2.20s; }
+.s5 { --d: 2.50s; }
+.s6 { --d: 2.80s; }
+.s7 { --d: 2.95s; }
+.s8 { --d: 3.10s; }
+.s9 { --d: 3.30s; }
+.s10 { --d: 4.70s; }
+.s11 { --d: 4.70s; }
+.s12 { --d: 4.70s; }
+.s13 { --d: 2.50s; }
+.s14 { --n: 22; --d: 2.50s; --t: 0.48s; }
+.s15 { --d: 3.10s; }
+.s16 { --d: 3.40s; }
+.s17 { --n: 33; --d: 3.40s; --t: 0.73s; }
+.s18 { --d: 4.25s; }
+.s19 { --d: 4.25s; }
+.s20 { --d: 2.80s; }
+.s21 { --d: 2.80s; }
+.s22 { --d: 3.30s; }
+.s23 { --d: 3.70s; }
+.s24 { --d: 4.10s; }
+.s25 { --d: 2.80s; }
+.s26 { --d: 2.65s; }
+.s27 { --d: 4.40s; }
+
+/* 2–5 text sections: heading left, words right */
+.block { display: grid; grid-template-columns: 5fr 7fr; gap: 24px 64px; padding-top: 96px; padding-bottom: 96px; }
+.block > * { min-width: 0; }
+.block + .block { border-top: 0; }
+.block h2 { font-size: 32px; line-height: 40px; }
+.block > p, .wl-copy p { max-width: 34em; color: var(--muted); font-size: 16px; line-height: 24px; }
+#pain { border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
+.pair { display: grid; grid-template-columns: 5fr 7fr; gap: 40px 64px; padding-bottom: 96px; }
+.pair > * { min-width: 0; }
+.pair h2 { font-size: 32px; line-height: 40px; }
+.pair p { max-width: 34em; margin-top: 16px; color: var(--muted); }
+.block .proof { grid-column: 2; max-width: 34em; padding-top: 20px; border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent); color: var(--muted); font-size: 14px; line-height: 20px; }
+.block .proof b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.block .proof a { color: var(--muted); text-underline-offset: 3px; }
+.block .proof a:visited { color: color-mix(in srgb, var(--muted) 70%, var(--ground)); }
+
+/* 6 waitlist */
+.waitlist { align-items: start; border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
+.wl-copy p { margin-top: 12px; }
+.card { max-width: 560px; padding: 28px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.card label[for="email"], legend { display: block; margin: 0 0 8px; padding: 0; color: var(--text); font: 500 14px/20px var(--body); }
+.row { display: flex; gap: 10px; }
+.row.end { justify-content: flex-end; align-items: center; margin-top: 8px; }
+input[type="email"] { flex: 1; min-width: 0; height: 52px; padding: 0 14px; border: 1px solid var(--field); border-radius: 10px; background: var(--sunk); color: var(--text); font: 400 16px/24px var(--body); transition: border-color 150ms ease; }
+input[type="email"]::placeholder { color: color-mix(in srgb, var(--muted) 70%, transparent); }
+input[type="email"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 10px; }
+input[aria-invalid="true"] { border-color: var(--bad); }
+.card .btn { min-height: 52px; }
+.step1 .btn { min-width: 176px; }
+.step2 .btn { min-width: 120px; }
+.note { min-height: 20px; margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 20px; }
+.card[data-state="bad"] #email-msg, .card[data-state="error"] #email-msg, .card[data-state="answer-error"] #answers-msg { color: var(--bad); }
+.step2 .note { margin-top: 0; }
+.step2 .note:empty:not(.held) { min-height: 0; } /* takes room once a message shows and keeps it, so a retry doesn't move Skip and Send; still in the tree for aria-live */
+.fine { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 16px; }
+.pot { display: none; }
+.done, .thanks { display: flex; gap: 10px; color: var(--text); font: 500 16px/24px var(--body); }
+.done:focus:not(:focus-visible), .thanks:focus:not(:focus-visible) { outline: none; } /* keyboard users see where focus moved */
+.tick { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 50%; background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); font-size: 13px; }
+.step2 .fine { margin: 6px 0 20px 34px; font-size: 14px; line-height: 20px; }
+fieldset { margin: 0 0 20px; padding: 0; border: 0; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opts label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid var(--field); border-radius: 10px; background: var(--sunk); color: var(--text); font: 400 14px/20px var(--body); cursor: pointer; transition: border-color 150ms ease, background-color 150ms ease; }
+.opts input { width: 16px; height: 16px; margin: 0; accent-color: var(--primary); }
+.opts input:focus-visible { outline: none; }
+.opts label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.opts label:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--sunk)); }
+.link { min-height: 44px; padding: 0 12px; border: 0; background: none; color: var(--muted); font: 500 16px/24px var(--body); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; flex: none; cursor: pointer; }
+.link[aria-disabled="true"] { cursor: progress; opacity: .6; }
+@media (hover: hover) and (pointer: fine) { .link:not([aria-disabled="true"]):hover { color: var(--text); } }
+
+/* footer */
+.foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 max(var(--gutter), env(safe-area-inset-right, 0px), calc((100% - var(--max)) / 2)) 0 max(var(--gutter), env(safe-area-inset-left, 0px), calc((100% - var(--max)) / 2)); padding: 28px 0 calc(32px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
+.foot small { color: var(--muted); font-size: 12px; line-height: 16px; }
+
+/* XMU-817: centred hero (approved mock v5.1, 2026-10-23). The product window plays below. */
+.hero { padding-top: 88px; text-align: center; }
+.hero-copy, .hero h1 { margin-left: auto; margin-right: auto; }
+.hero-copy { max-width: 880px; }
+.hero h1 { max-width: 17.5em; }
+.hero .sub { margin-left: auto; margin-right: auto; max-width: 34em; }
+.hero .actions { justify-content: center; }
+.actions-note { margin-top: 14px; }
+.actions-note small { color: var(--muted); font-size: 14px; line-height: 20px; }
+.hero .tm { margin-top: 64px; text-align: left; }
+@media screen and (max-width: 760px) { .hero .tm { margin-top: 40px; } }
+.btn.ghost { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
+@media (hover: hover) and (pointer: fine) { .btn.ghost:hover { background: color-mix(in srgb, var(--text) 6%, transparent); } }
+/* XMU-830: the demo video, framed like the hero window. When it ends, the dimmed last frame carries the real
+   waitlist button and "Watch again" (opacity plus a 6px rise, 220ms, --ease-out). The video is always dark,
+   so the overlay keeps the window's own tokens in both themes. */
+.demo { padding-bottom: 96px; --primary-hover: #3A7DBA; } /* the light theme's navy hover would vanish into the dark overlay */
+.demo-frame { position: relative; overflow: hidden; border-radius: 16px; background: var(--t-bg);
+  box-shadow: 0 0 0 6px rgb(255 255 255 / .035), 0 0 0 7px rgb(255 255 255 / .08), 0 40px 80px -32px rgb(0 0 0 / .6); }
+:root[data-theme="light"] .demo-frame { box-shadow: 0 0 0 6px rgb(5 10 18 / .04), 0 0 0 7px rgb(5 10 18 / .08), 0 40px 80px -32px rgb(5 10 18 / .35); }
+.demo video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; }
+.demo-play { position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: inline-flex; align-items: center; gap: 12px; white-space: nowrap;
+  min-height: 56px; padding: 0 20px 0 8px; border: 0; border-radius: 999px; background: rgb(15 26 43 / .72);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: inset 0 0 0 1px rgb(234 244 255 / .14), 0 16px 40px -12px rgb(0 0 0 / .6);
+  color: var(--t-text); font: 500 16px/24px var(--body); cursor: pointer; transition: transform 160ms var(--ease-out), background-color 160ms ease; }
+.demo-play[hidden] { display: none; }
+.demo-play:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) { .demo-play:hover { background: rgb(15 26 43 / .86); } }
+.demo-play:focus-visible { outline: 2px solid var(--t-key); outline-offset: 3px; }
+.demo-play-i { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 999px; background: var(--primary); }
+.demo-play-i svg { width: 18px; height: 18px; margin-left: 2px; fill: var(--on-primary); }
+.demo-play-t { color: var(--t-dim); font-variant-numeric: tabular-nums; }
+.demo-end { position: absolute; inset: 0; display: grid; place-items: center; background: rgb(5 10 18 / .74);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); opacity: 0; transition: opacity 220ms var(--ease-out); }
+.demo-end[hidden] { display: none; }
+.demo-end.on { opacity: 1; }
+.demo-end-in { display: grid; justify-items: center; gap: 12px; transform: translateY(6px); transition: transform 220ms var(--ease-out); }
+.demo-end.on .demo-end-in { transform: none; }
+.demo-again { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 0; border-radius: 10px;
+  background: transparent; color: var(--t-dim); font: 500 14px/20px var(--body); cursor: pointer; transition: color 160ms ease; }
+.demo-again svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+@media (hover: hover) and (pointer: fine) { .demo-again:hover { color: var(--t-text); } }
+.demo-again:focus-visible { outline: 2px solid var(--t-key); outline-offset: 2px; }
+.demo-text { margin-top: 16px; color: var(--muted); font-size: 14px; line-height: 20px; }
+.demo-text summary { width: fit-content; padding: 12px 0; cursor: pointer; } /* stays a list-item, so it keeps its triangle */
+.demo-text ol { max-width: 44em; margin: 4px 0 0; padding-left: 20px; }
+.demo-text li + li { margin-top: 6px; }
+@media (prefers-reduced-motion: reduce) { .demo-end, .demo-end-in, .demo-again, .demo-play { transition: none; } .demo-end-in { transform: none; } }
+
+/* XMU-817: How it works. Each step card sits next to a flat xmu screen of that step, sides
+   alternating, a line and dot joining them. Cards follow the theme; the screens stay dark, like
+   the hero window, with the same cast and story. Every colour is a brand v1 colour. */
+.how { padding-top: 120px; padding-bottom: 96px; }
+.how h2 { margin-bottom: 40px; font: 500 56px/64px var(--display); }
+.hw-list { --reach: 64px; display: grid; gap: 56px; margin: 0; padding: 0; list-style: none; }
+.hw-row { display: grid; grid-template-columns: 400px minmax(0, 1fr); column-gap: var(--reach); align-items: center; }
+.hw-row:nth-child(even) { grid-template-columns: minmax(0, 1fr) 400px; }
+.hw-row:nth-child(even) .hw-card { order: 2; }
+.hw-card { position: relative; padding: 26px 28px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+.hw-card::after { content: ""; position: absolute; top: 50%; left: 100%; width: var(--reach); height: 1px; background: var(--line); }
+.hw-card::before { content: ""; position: absolute; top: 50%; left: calc(100% + var(--reach) - 5px); z-index: 1; width: 11px; height: 11px; margin-top: -5px;
+  border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--ground), 0 0 0 4px var(--line); }
+.hw-row:nth-child(even) .hw-card::after { left: auto; right: 100%; }
+.hw-row:nth-child(even) .hw-card::before { left: auto; right: calc(100% + var(--reach) - 6px); }
+.hw-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.hw-tag { padding: 1px 12px; background: var(--text); color: var(--ground); font: 500 14px/22px var(--mono); letter-spacing: .18em; text-transform: uppercase; white-space: nowrap; }
+.hw-name { color: var(--text); font: 400 20px/28px var(--mono); }
+.hw-card h3 { margin: 22px 0 17px; color: var(--text); font: 400 17px/26px var(--body); text-wrap: balance; }
+.hw-card > p:last-child { margin-top: 0; color: var(--muted); font: 400 14px/23px var(--mono); text-wrap: pretty; }
+.hw-card code { color: var(--text); font: 500 14px/23px var(--mono); }
+
+/* XMU-833: the four screens take the hero window's look (the approved mock): the same tokens, panes, agent
+   chips and xmu bar, held still. Step 2 is the invite landing in ana's and mia's own terminals. The window's
+   own rules (.pane, .chat, .cli...) carry over; these set the screens' sizes and undo the hero's layout. */
+.hx, .hx *, .hx *::before, .hx *::after { animation: none !important; }
+.hw-shot.hx, .hx.own { display: flex; flex-direction: column; min-width: 0; overflow: hidden; border-radius: 12px; background: var(--t-bg); color: var(--t-text);
+  font: 400 13px/20px "Geist", var(--body);
+  box-shadow: 0 0 0 1px var(--t-line), inset 0 1px 0 rgb(234 244 255 / .05), 0 24px 48px -24px rgb(5 10 18 / .7), 0 2px 6px rgb(5 10 18 / .25); }
+.hx.own { box-shadow: 0 0 0 1px rgb(var(--cr) / .4), inset 0 1px 0 rgb(234 244 255 / .05), 0 24px 48px -24px rgb(5 10 18 / .7), 0 2px 6px rgb(5 10 18 / .25); }
+:root[data-theme="light"] .hw-shot.hx { box-shadow: 0 0 0 1px var(--t-line), 0 24px 48px -24px rgb(5 10 18 / .35); }
+:root[data-theme="light"] .hx.own { box-shadow: 0 0 0 1px rgb(var(--cr) / .5), 0 24px 48px -24px rgb(5 10 18 / .35); }
+.hx .tm-bar { gap: 12px; padding: 8px 14px; font-size: 12.5px; }
+.hx .dots { display: flex; } .hx .dots i { width: 8px; height: 8px; }
+.hx .here { --gap: 8px; }
+.hx .who .pp, .hx .who .pa { width: 20px; height: 20px; }
+.hx .cnt { display: inline; font-size: 12px; }
+.hx .cli { font-size: 12.5px; line-height: 19px; } .hx .g { height: 19px; }
+.hx-body { display: grid; min-height: 0; }
+.hx .pane { grid-area: auto; padding: 14px 16px 18px; border: 0; }
+.hx .pane.ana, .hx .pane.mia { display: flex; } /* the hero's phone layout hides them; the screens keep them down to 561px */
+.hx .cl-diff p { margin-right: -16px; }
+/* the screens' panes are narrower than the hero's: long lines wrap under themselves, and ben's diff drops its line numbers when tight */
+.hx .cli p { white-space: pre-wrap; } .hx .cli .cl-diff p { white-space: pre; }
+.hx .cli :is(.cl-t, .cu-t, .cu-w) { padding-left: 2ch; text-indent: -2ch; }
+.hx .cli .cl-r { padding-left: 5ch; text-indent: -5ch; }
+.hx .cli :is(.cx-u, .cx-in) { padding-left: calc(16px + 2ch); padding-right: 8px; text-indent: -2ch; }
+.hx .cli .cu-u { padding-right: 4px; }
+@container ben (max-width: 320px) { .hx .cl-diff .n { display: none; } .hx .cl-diff { padding-left: 0; } }
+.hx-body.two { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); }
+.hx-body.two > * + * { border-left: 1px solid var(--t-line); }
+/* step 3: ana and mia stacked beside ben, as in the hero */
+.hx-body.two > .col { display: grid; grid-template-rows: auto 1fr; min-width: 0; min-height: 0; }
+.hx .col > .pane + .pane { border-top: 1px solid var(--t-line); }
+/* step 4: the chat history beside ben's pane */
+.hx .chat { contain: none; height: auto; padding: 10px 0; border: 0; border-left: 1px solid var(--t-line); background: rgb(15 26 43 / .45); }
+.hx .feed { display: block; -webkit-mask-image: none; mask-image: none; }
+.hx .chat li { padding: 6px 14px; }
+.hx .chat .nm { font-size: 12.5px; }
+.hx .chat p + p { font-size: 13px; line-height: 19px; }
+.hx .chat .bot p + p { color: rgb(234 244 255 / .9); }
+
+/* step 2: the invite as it lands in ana's and mia's own terminals */
+.hw-shot.hx-duo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.hx.own .here .av { width: 20px; height: 20px; background: var(--c); color: #050A12; font: 600 10px/1 var(--body); }
+.own-body { flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 12px 12px 14px; }
+.sh { padding: 0 4px; font: 400 12.5px/19px var(--mono); }
+.sh p { margin: 0; white-space: pre; } .sh .d { color: var(--t-dim); }
+/* concentric: popover 10px with a 6px inset list, so each row is 4px */
+.pop { border-radius: 10px; background: var(--t-panel);
+  box-shadow: 0 0 0 1px var(--t-line), inset 0 1px 0 rgb(234 244 255 / .04), 0 16px 32px -14px rgb(5 10 18 / .75); }
+.pop ul { margin: 0; padding: 0 6px; list-style: none; }
+.pop b { font-weight: 600; }
+.nt-h { display: flex; align-items: center; gap: 8px; margin: 0; padding: 10px 12px 6px; text-wrap: balance; }
+.nt-h .av { width: 20px; height: 20px; background: var(--c); color: #050A12; font: 700 10px/1 var(--body); }
+.nt-l { margin: 0; padding: 2px 12px 4px; color: var(--t-dim); font-size: 12px; }
+.nt-r { display: flex; align-items: center; gap: 8px; padding: 3px 8px; border-radius: 4px; }
+.nt-m { width: 8px; color: var(--c); font: 600 13px/20px var(--mono); }
+.nt-lg { display: grid; place-items: center; width: 14px; height: 14px; }
+.nt-lg .mlogo { width: 13px; height: 13px; }
+/* any other CLI agent: a plain prompt glyph in the logo's place */
+.glyph-cli { color: var(--t-dim); font: 600 10px/1 var(--mono); letter-spacing: -.05em; }
+.nt-r.any { color: var(--t-dim); }
+.nt-r.sel { background: rgb(var(--cr) / .14); box-shadow: inset 0 0 0 1px rgb(var(--cr) / .35); font-weight: 500; }
+.pop-f { margin: 6px 0 0; padding: 7px 12px 8px; border-top: 1px solid var(--t-line); color: var(--t-dim); font: 400 12px/16px var(--mono); }
+.hx.own .xb { padding: 7px 14px; font-size: 12.5px; }
+.xb.focus { border-top-color: #2E6EA8; background: linear-gradient(rgb(46 110 168 / .16), rgb(46 110 168 / .16)) var(--t-panel); }
+
+/* rows rise in as they scroll into view; reduced motion and older browsers show them at once */
+@keyframes hw-rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@media screen and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .hw-row { animation: hw-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 60%; }
+  }
+}
+
+@media (max-width: 1180px) {
+  .hw-list { gap: 40px; }
+  .hw-row, .hw-row:nth-child(even) { grid-template-columns: minmax(0, 1fr); row-gap: 16px; }
+  .hw-row:nth-child(even) .hw-card { order: 0; }
+  .hw-card::before, .hw-card::after { display: none; }
+}
+@media screen and (max-width: 760px) {
+  .how { padding-top: 72px; padding-bottom: 72px; }
+  .how h2 { margin-bottom: 28px; font-size: 36px; line-height: 44px; }
+}
+/* XMU-833: step 2's two terminals stack under 761px; phones get the hero's phone look, ben's pane alone in steps 3 and 4 */
+@media screen and (max-width: 760px) { .hw-shot.hx-duo { grid-template-columns: minmax(0, 1fr); } }
+@media screen and (max-width: 560px) {
+  .hx-body.two { grid-template-columns: minmax(0, 1fr); }
+  .hx-body.two > :not(:first-child) { display: none; }
+  .hx .tm-bar { gap: 10px; padding: 8px 12px; }
+  .hx .cnt { display: none; }
+  .hx .pane { padding: 12px 12px 14px; }
+  .hx .cli { font-size: 12px; line-height: 18px; } .hx .g { height: 18px; }
+  .hx .cl-diff p { margin-right: -12px; }
+  .hx .xb, .hx.own .xb { padding: 7px 12px; font-size: 12px; }
+}
+
+/* XMU-817: the agents and tools xmu works with */
+.stack { padding-top: 40px; padding-bottom: 112px; text-align: center; }
+.stack h2 { max-width: 18em; margin: 0 auto; font-size: 32px; line-height: 40px; }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 920px; margin: 32px auto 0; padding: 0; list-style: none; }
+.chips li { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--text); font: 500 15px/20px var(--body); }
+.chips .mlogo { width: 16px; height: 16px; }
+.chips .lg-codex, .chips .lg-cursor { fill: var(--text); }
+.chips-sub { margin-top: 20px; color: var(--muted); }
+@media screen and (max-width: 760px) { .stack { padding-bottom: 72px; } .stack h2 { font-size: 26px; line-height: 34px; } }
+
+@media (max-width: 1023px) {
+  :root { --gutter: 32px; }
+  .block { grid-template-columns: 1fr; padding-top: 72px; padding-bottom: 72px; }
+  .pair { grid-template-columns: 1fr; gap: 56px; padding-bottom: 72px; }
+  .block .proof { grid-column: 1; }
+  .work { grid-template-columns: 1fr; }
+  .chat { contain: none; border-left: 0; border-top: 1px solid var(--t-line); }
+}
+/* 1023 and below, on screen: the chat sits under the panes at a fixed height, newest at the bottom and older
+   lines fading under its top edge, so the window doesn't grow as messages arrive (paper prints it whole) */
+@media screen and (max-width: 1023px) {
+  .chat { height: 200px; padding: 8px 0; }
+  .chat-h { display: none; }
+  .feed { display: flex; flex-direction: column; justify-content: flex-end; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 40px); mask-image: linear-gradient(to bottom, transparent 0, #000 40px); }
+}
+
+/* phone */
+@media screen and (max-width: 760px) { /* paper keeps the full window */
+  :root { --gutter: 16px; --hdr: 56px; }
+  .brand .mk { width: 30px; } .brand .wm { height: 17px; }
+  .nav .btn.sm .arr { display: none; }
+  .hero { padding-top: 40px; padding-bottom: 56px; }
+  .hero h1 { font-size: 36px; line-height: 44px; }
+  .hero .sub { margin-top: 16px; font-size: 18px; line-height: 26px; }
+  .actions { margin-top: 24px; }
+  .actions .btn { width: 100%; }
+  /* XMU-833: ben's pane, the chat under it and xmu's bar; the avatars say who is in (no count text) */
+  .tm { margin: 40px 7px 0; }
+  .tm-bar { gap: 10px; padding: 10px 12px; }
+  .dots, .cnt, .live { display: none; }
+  .here { --gap: 6px; }
+  .who .pp, .who .pa { width: 20px; height: 20px; }
+  .panes { grid-template-columns: 1fr; grid-template-areas: "ben"; grid-template-rows: 322px; }
+  .pane.ben { border-bottom: 0; }
+  .invite, .pane.ana, .pane.mia { display: none; }
+  .pane { padding: 12px; }
+  .cli { font-size: 12px; line-height: 18px; } .g { height: 18px; }
+  .cl-diff p { margin-right: -12px; }
+  .chat { height: 168px; }
+  .xb { padding: 8px 12px; font-size: 12px; }
+  .block { gap: 16px; padding-top: 56px; padding-bottom: 56px; }
+  .block h2, .pair h2 { font-size: 26px; line-height: 34px; }
+  .pair { gap: 48px; padding-bottom: 56px; }
+  .pair p { margin-top: 12px; }
+  .block > p, .wl-copy p { font-size: 16px; line-height: 24px; }
+  .card { padding: 20px; }
+  .card .row:not(.end) { flex-direction: column; }
+  .card .row:not(.end) input { flex: none; width: 100%; }
+  .card .btn { width: 100%; }
+}
+/* narrow phones: the window bar keeps the session name and the avatars down to 320px, with room for CI's wider text */
+@media screen and (max-width: 374px) { .tm-app { display: none; } }
+/* the step screens' bars carry three avatar pairs: drop "xmu ·" a little sooner */
+@media screen and (max-width: 400px) { .hx .tm-app { display: none; } }
+@media screen and (max-width: 340px) { .who .pa { display: none; } }
+/* under 375: a line still too long for the pane fades out at its right edge, as in a narrow terminal */
+@media screen and (max-width: 374px) {
+  .pane .cli p { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent); }
+  /* except ben's diff in the hero: its code wraps under itself, past the line number, as Claude prints a diff in a
+     narrow terminal, so the fix stays readable whole (QA round 3) */
+  .tm .pane.ben .cl-diff p { white-space: pre-wrap; padding-left: 6ch; padding-right: 12px; text-indent: -6ch; -webkit-mask-image: none; mask-image: none; }
+}
+@media screen and (max-width: 360px) {
+  .panes { grid-template-rows: 344px; } /* ben's lines wrap more: his pane gets taller, still the same waiting and settled */
+  /* and the header: "Join the waitlist" keeps one line even where text draws a little wider */
+  .nav .brand { gap: 6px; } .nav-r { gap: 2px; } .nav .btn.sm { padding: 0 8px; }
+}
+
+/* reduced motion and paper: every line in its final state */
+@media (prefers-reduced-motion: reduce), print {
+  .btn, .btn .arr, .skip { transition: none; }
+}
+
+/* Windows high contrast: buttons lose their fill, so give them an edge */
+@media (forced-colors: active) {
+  .btn { border: 1px solid ButtonText; }
+  /* logos would turn white on white; the step connectors would vanish */
+  svg.mlogo { fill: CanvasText !important; }
+  .hw-card::before, .hw-card::after { forced-color-adjust: none; background: CanvasText; box-shadow: none; }
+  /* the window dots are plain blocks; tags, avatars and the picked agent in step 2 need an edge */
+  .dots i { forced-color-adjust: none; background: CanvasText; box-shadow: none; }
+  .hw-tag, .who .pp, .av:not(.ag), .nt-r.sel { border: 1px solid CanvasText; }
+  /* XMU-829: the join's dots are plain blocks; "Link copied" needs an edge */
+  .sys-dot, .iv-dots i { forced-color-adjust: none; background: CanvasText; }
+  .iv-copied { border: 1px solid CanvasText; }
+  /* XMU-833: the typing cursors are plain blocks; the agent chips and the "typing" pill need an edge */
+  .cur, .tw::after { forced-color-adjust: none; background: CanvasText; }
+  .tag, .ph .in, .cl-in .flag { border: 1px solid CanvasText; }
+  /* the window's and the screens' frames are shadows, which this mode drops: an outline keeps the edge, no reflow */
+  .tm, .hw-shot.hx, .hx.own { outline: 1px solid CanvasText; }
+  /* the terminal glyphs keep their screen colours otherwise, light on a light system theme (QA round 3) */
+  .g-dot, .g-dot.ok, .g-hex { forced-color-adjust: none; fill: CanvasText; } .g-hex.open { fill: none; stroke: CanvasText; }
+  .pop, .role { border: 1px solid CanvasText; }
+}
+
+/* print: dark text on white paper, without the parts that only work on screen */
+@media print {
+  :root, :root[data-theme="light"] { --ground: #FFFFFF; --surface: #FFFFFF; --sunk: #FFFFFF; --line: #CBD8E8; --text: #050A12; --muted: #2B3A55; --link: #2E6EA8; color-scheme: light; }
+  .nav { position: static; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .skip, .theme, .nav .btn, .actions .btn, #waitlist .card { display: none; }
+  /* the window stays dark even without background graphics, and drops the shadow ring that could spill onto the page before */
+  .tm, :root[data-theme="light"] .tm { break-inside: avoid; box-shadow: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* the step screens and tags too (XMU-817); each step prints whole */
+  .hw-shot, .hw-shot.hx, .hx.own, :root[data-theme="light"] :is(.hw-shot.hx, .hx.own) { box-shadow: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .hw-tag { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .hw-row { break-inside: avoid; }
+  .how h2 { break-after: avoid; }
+  /* XMU-830: the poster or last frame prints without the play button, overlay or shadow, and the text version prints open */
+  .demo-play, .demo-end { display: none; }
+  .demo-frame, :root[data-theme="light"] .demo-frame { box-shadow: none; }
+  @supports selector(::details-content) {
+    .demo-text summary { display: none; }
+    .demo-text::details-content { content-visibility: visible; display: block; }
+  }
+}
+/* paper under 1200px: the panes grow to their whole finished transcripts instead of the screen's fixed rows. Under
+   1024px (A4 and Letter portrait, Letter landscape) the chat sits under the panes, so the window prints smaller to
+   fit one page at Chrome's default margins: 92% upright, 70% on its side */
+@media print and (max-width: 1199px) {
+  .panes { grid-template-rows: auto auto; }
+  .tm .pane.ben .cl { flex: none; overflow: visible; }
+}
+@media print and (max-width: 1023px) { .tm { zoom: 0.92; } }
+@media print and (max-width: 1023px) and (orientation: landscape) { .tm { zoom: 0.7; } }
+
+/* step 1: ben has typed invite in xmu's bar and his team list is open above it (XMU-860) */
+.hw-shot.hx { position: relative; }
+/* the list is 174px tall and sits on the bar. Ben's transcript is just tall enough that the list opens 8px under his
+   pane's header, over the first line whole, so its edge never cuts a line in half (QA round 2). Under the list, xmu's
+   bar has focus, so Claude's "? for shortcuts" tip is not drawn. */
+.hw-shot.pick .pane.ben .cl { min-height: 161px; }
+.hw-shot.pick .pane.ben .cl-hints { display: none; }
+/* on phones the pane's text starts 12px in: the list starts 2px left of it, as on wider screens */
+@media screen and (max-width: 560px) { .hw-shot.pick .pane.ben .cl { min-height: 167px; } .hw-shot.pick .pk { left: 10px; } }
+.pk { position: absolute; left: 14px; bottom: 46px; z-index: 2; width: max-content; min-width: 248px; box-shadow: 0 0 0 1px var(--t-line), 0 16px 32px -12px rgb(5 10 18 / .6); }
+.pk .pop-h { margin: 0; padding: 10px 14px 8px; color: var(--t-dim); font-size: 12px; }
+.pk .pop-h b { color: var(--t-text); font-weight: 500; }
+.pk .pop-f { padding: 8px 14px 9px; }
+.pk-r { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 6px; font-size: 13px; }
+.pk-r.focus { background: rgb(234 244 255 / .06); box-shadow: inset 0 0 0 1px var(--t-line); } /* a lighter fill would take "lead" under 4.5:1 */
+.pk-r .av { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--c); color: #050A12; font: 700 10px/1 var(--body); font-style: normal; }
+.pk-r .av.sam { --c: var(--t-line); }
+.pk-r .nm { display: flex; align-items: center; gap: 6px; color: var(--t-text); font-weight: 500; }
+.pk-r .role { padding: 1px 6px; border-radius: 4px; background: rgb(242 122 160 / .15); color: var(--c-mia); font-size: 12px; font-weight: 500; }
+.pk-r.off .av { color: var(--t-dim); } .pk-r.off .nm { color: var(--t-dim); font-weight: 400; }
+/* the empty box's edge is --t-dim, so it reaches 3:1 on the panel */
+.pk .box { display: grid; place-items: center; width: 15px; height: 15px; flex: none; border: 1px solid var(--t-dim); border-radius: 4px; }
+.pk .box.y { border-color: var(--primary); background: var(--primary); }
+.pk .box svg { width: 11px; height: 11px; fill: none; stroke: var(--t-text); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.xb .xb-cmd { color: var(--t-text); }
+/* high contrast: a ticked box is a solid block of the system text colour with a Canvas tick, and mia's focus row keeps an
+   outline. This block comes after the box rules above, so it wins over the brand blue at the same specificity (QA round 2). */
+@media (forced-colors: active) {
+  .pk .box { border-color: CanvasText; }
+  .pk .box.y { forced-color-adjust: none; border-color: CanvasText; background: CanvasText; } .pk .box.y svg { stroke: Canvas; }
+  .pk-r.focus { outline: 1px solid CanvasText; }
+}
