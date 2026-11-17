@@ -1,0 +1,45 @@
+name: site-checks
+
+# The landing page (xmu.sh): waitlist logic, page structure, phone layout, light/dark
+# contrast, Vercel headers, the install bootstrap and the public-repo privacy guard,
+# in headless Chromium. Moved here from the monorepo in XMU-1011.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A new push to a PR cancels that PR's older run; a push to main is never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    # Pinned: ubuntu-latest is 26.04 here, and Playwright 1.56.1 can't install Chromium on it.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+
+      - name: Install (Playwright only)
+        run: bun install --frozen-lockfile
+
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Site tests
+        run: bun test tests
+        env:
+          # The words the privacy guard bans (tests/public-repo.test.ts), kept out of the repo.
+          # Secrets don't reach PRs from forks, so the guard only insists on them here.
+          PRIVATE_WORDS: ${{ secrets.PRIVATE_WORDS }}
+          REQUIRE_PRIVATE_WORDS: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}

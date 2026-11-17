@@ -1,0 +1,14 @@
+{
+  "name": "@xmu/site",
+  "private": true,
+  "description": "xmu landing page (XMU-799): static HTML/CSS/JS served by Vercel.",
+  "type": "module",
+  "scripts": {
+    "test": "bun test tests",
+    "launch-check": "bun tools/launch-check.ts",
+    "og": "bun tools/render-og.ts"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
+  }
+}
